@@ -1,0 +1,11 @@
+# Fichiers de configuration sensibles (Sécurité BDD)
+api/config.php
+
+# Fichiers système macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Dossiers d'éditeurs de code
+.vscode/
+.idea/
