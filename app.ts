@@ -2,6 +2,28 @@ import { Tache } from "./Tache.js";
 
 let btnAjouter = document.getElementById('btnAjouter') as HTMLButtonElement;
 let inputTache = document.getElementById('inputTache') as HTMLInputElement;
+let listeTaches = document.getElementById('listeTaches') as HTMLDivElement;
+
+interface TacheAPI {
+    id: number;
+    title: string;
+}
+
+function displayTask(tache: Tache){
+    let balise = document.createElement('div');
+    balise.innerText = tache.title;
+    listeTaches.appendChild(balise);
+}
+
+function loadTasks(){
+    fetch('get_tasks.php')
+    .then(reponse => reponse.json())
+    .then(tasks => { tasks.forEach((task: TacheAPI) => {
+        let t = new Tache(task.title);
+        t.id = task.id;
+        displayTask(t);
+    });})
+}
 
 btnAjouter.addEventListener('click', () => {
     let texteSaisi = inputTache.value;
@@ -20,8 +42,10 @@ btnAjouter.addEventListener('click', () => {
                 let nouvTache = new Tache(texteSaisi);
                 nouvTache.id = data.id;
                 inputTache.value = '';
+                displayTask(nouvTache);
             }
         })
         .catch(err => console.error(err))   
 })
 
+loadTasks();
