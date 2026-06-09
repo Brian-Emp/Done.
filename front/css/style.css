@@ -27,13 +27,13 @@
    1. VARIABLES  —  thème clair par défaut, sombre automatique
    =================================================================== */
 :root {
-  --fond:        #f6f7f9;   /* fond général                  */
-  --surface:     #ffffff;   /* tâches, cartes                */
-  --surface-2:   #fbfbfc;   /* sidebar                       */
+  --fond:        #E8E9F3;   /* fond général                  */
+  --surface:     #fbfbfc;   /* tâches, cartes                */
+  --surface-2:   #E8E9F3;   /* sidebar                       */
   --texte:       #1f2329;   /* texte principal               */
   --texte-doux:  #8a9099;   /* texte secondaire, icônes      */
-  --bordure:     #ebecef;   /* traits de séparation          */
-  --accent:      #3b6ef6;   /* couleur de marque (bleu)      */
+  --bordure:     #1f2329;   /* traits de séparation          */
+  --accent:      #044177;   /* couleur de marque (bleu)      */
   --accent-doux: rgba(59, 110, 246, 0.10);
   --danger:      #ef4444;
   --danger-doux: rgba(239, 68, 68, 0.10);
@@ -163,6 +163,10 @@ ul     { list-style: none; }
 }
 #menuListes li:hover { background: var(--accent-doux); color: var(--texte); }
 
+#menuListes li.liste-active {
+  background: var(--accent);
+  color: #fff;
+}
 
 /* ===================================================================
    5. ZONE PRINCIPALE + SAISIE
@@ -459,4 +463,39 @@ ul     { list-style: none; }
   background: var(--bordure);
   border: 3px solid var(--fond);
   border-radius: 99px;
+}
+
+/* ===================================================================
+   MENU CONTEXTUEL (Clic Droit)
+   =================================================================== */
+.context-menu {
+  position: fixed; /* fixed évite que le menu ne saute si la page défile */
+  z-index: 1000;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); /* Belle ombre douce */
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+}
+
+.context-menu button {
+  padding: 8px 12px;
+  text-align: left;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background var(--transition), color var(--transition);
+}
+
+.context-menu button:hover {
+  background: var(--accent-doux);
+  color: var(--accent);
+}
+
+/* Style spécial pour le bouton supprimer */
+.context-menu button.danger:hover {
+  background: var(--danger-doux);
+  color: var(--danger);
 }

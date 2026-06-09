@@ -1,4 +1,5 @@
 import { Tache } from "./Tache.js";
+import { langueActive, dictionnaire } from "./dico.js";
 
 let btnAjouter = document.getElementById('btnAjouter') as HTMLButtonElement;
 let inputTache = document.getElementById('inputTache') as HTMLInputElement;
@@ -6,7 +7,12 @@ let listeTaches = document.getElementById('listeTaches') as HTMLDivElement;
 let btn_logout = document.getElementById('btn_logout') as HTMLButtonElement;
 let menuListes = document.getElementById('menuListes') as HTMLUListElement;
 let btnAjouterListe = document.getElementById('btnAjouterListe') as HTMLButtonElement;
-
+let titreListeActive = document.getElementById('titreListeActive') as HTMLHeadingElement;
+let menuContextuel = document.getElementById('menuContextuel') as HTMLDivElement;
+let btnDeleteListCtx = document.getElementById('btnDeleteListCtx') as HTMLButtonElement;
+let btnRenameListCtx = document.getElementById('btnRenameList') as HTMLButtonElement;
+let listeCibleId: number = 0;
+let listeCibleNom: string = '';
 
 let userList = 0;
 
@@ -18,6 +24,18 @@ interface TacheAPI {
 //////////////////////////////////////
 //FUNCTIONS
 //////////////////////////////////////
+function appliquerTraduction() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (key === 'input_placeholder' && el instanceof HTMLInputElement) {
+            el.placeholder = dictionnaire[langueActive][key];
+        } 
+        else (key && dictionnaire[langueActive] && dictionnaire[langueActive][key]) {
+            el.textContent = dictionnaire[langueActive][key];
+        }
+    });
+}
+
 function displayTask(tache: Tache){
     let balise = document.createElement('div');
     balise.innerText = tache.title;
@@ -49,6 +67,9 @@ function displayTask(tache: Tache){
     if (tache.estTermine){
         balise.style.textDecoration = 'line-through';
         balise.style.color = 'gray';
+        balise.style.order = '1';
+    } else {
+        balise.style.order = '0';
     }
     /// Event listener change the state of the task when clicked
     balise.addEventListener('click', () => {
@@ -64,9 +85,11 @@ function displayTask(tache: Tache){
                     if (tache.estTermine){
                         balise.style.textDecoration = 'line-through';
                         balise.style.color = 'gray';
+                        balise.style.order = '1';
                     } else {
                         balise.style.textDecoration = 'none';
                         balise.style.color = 'black';
+                        balise.style.order = '0';
                     }
                 }
             })
@@ -83,6 +106,7 @@ function loadTasks(){
             window.location.href = 'login.html';
             return;
         } else {
+            listeTaches.innerHTML = '';
             tasks.forEach((task: TacheAPI) => {
             let t = new Tache(task.title);
             t.id = task.id;
@@ -101,13 +125,30 @@ function loadLists() {
     .then(lists => { 
         if (lists.success === true && Array.isArray(lists.lists)) {
             lists.lists.forEach((list: {id: number, name: string}, index: number) => {
+                let li = document.createElement('li');
                 if (index === 0) {
+                    document.querySelectorAll('#menuListes li').forEach(el => el.classList.remove('liste-active'));
+                    li.classList.add('liste-active');
+                    titreListeActive.innerText = list.name;
                     userList = list.id;
                     loadTasks();
                 }
-                let li = document.createElement('li');
                 li.innerText = list.name;
+                li.style.cursor = 'pointer';
+                if (index !== 0) {
+                    li.addEventListener('contextmenu', (event) => {
+                    event.preventDefault(); 
+                    listeCibleId = list.id;
+                    listeCibleNom = list.name;
+                    menuContextuel.style.display = 'flex';
+                    menuContextuel.style.left = event.pageX + 'px';
+                    menuContextuel.style.top = event.pageY + 'px';
+                    });
+                }
                 li.addEventListener('click', () => {
+                    document.querySelectorAll('#menuListes li').forEach(el => el.classList.remove('liste-active'));
+                    li.classList.add('liste-active');
+                    titreListeActive.innerText = list.name;
                     userList = list.id;
                     listeTaches.innerHTML = '';
                     loadTasks();
@@ -129,6 +170,53 @@ inputTache.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         btnAjouter.click(); 
     }
+});
+
+document.addEventListener('click', () => {
+    menuContextuel.style.display = 'none';
+});
+
+btnRenameListCtx.addEventListener('click', () => {
+    let nouveauNom = prompt("Entrez le nouveau nom de la liste :", listeCibleNom);
+    if (nouveauNom && nouveauNom.trim() !== '') {
+        let donneesAEnvoyer = { id: listeCibleId, name: nouveauNom.trim() };
+        fetch('../api/update_list.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(donneesAEnvoyer)
+        })
+        .then(reponse => reponse.json())
+        .then(data => {
+            if (data.success === true) {
+                menuListes.innerHTML = '';
+                loadLists();
+            }
+        })
+        .catch(err => console.error(err));
+    } else {
+        alert("Le nom de la liste ne peut pas être vide.");
+    }
+});
+
+btnDeleteListCtx.addEventListener('click', () => {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer la liste "${listeCibleNom}" ?`)) {
+        return;
+    }
+    
+    let donneesAEnvoyer = { id: listeCibleId };
+    fetch('../api/delete_list.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(donneesAEnvoyer)
+    })
+    .then(reponse => reponse.json())
+    .then(data => {
+        if (data.success === true) {
+            menuListes.innerHTML = '';
+            loadLists();
+        }
+    })
+    .catch(err => console.error(err));
 });
 
 btnAjouter.addEventListener('click', () => {
@@ -187,7 +275,7 @@ btn_logout.addEventListener('click', () => {
 });
 
 loadLists();
-
+appliquerTraduction();
 
 // --- Switch theme ---
 const btnTheme = document.getElementById('btn_theme') as HTMLButtonElement || null;

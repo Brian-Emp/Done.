@@ -6,27 +6,67 @@
     <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));</script>
     <link rel="stylesheet" href="css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="assets/done-favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/done-favicon-32.png">
+    <link rel="apple-touch-icon" href="assets/done-favicon-180.png">
 </head>
 <body class="app-layout">
     <aside class="sidebar">
         <h1>Done.</h1>
-        <p>Focus & Productivity</p><button id="btnAjouterListe">+</button>
+        <p data-i18n="app_subtitle">Focus & Productivity</p><button id="btnAjouterListe">+</button>
         <ul id="menuListes"></ul>
     </aside>
 
     <div class="conteneur-principal">
+        <h2 id="titreListeActive" style="margin-bottom: 15px;">Général</h2>
         <div class="zone-saisie">
-            <input type="text" id="inputTache" placeholder="What's next ?" required>
-            <button id="btnAjouter">Add</button>
+            <input type="text" id="inputTache" placeholder="What's next ?" data-i18n="input_placeholder" required>
+            <button id="btnAjouter" data-i18n="btn_add">Add</button>
         </div>
 
         <div id="listeTaches" class="zone-taches">
-            </div>
+        </div>
+        <div id="zoneParametres" class="zone-parametres" style="display: none;">
+            <h2 data-i18n="settings_title">Réglages</h2>
+
+            <section class="section-parametre">
+                <h3 data-i18n="settings_account">Mon Compte</h3>
+                <div class="carte-parametre">
+                    <p data-i18n="settings_logged_as">Connecté en tant que :</p>
+                    <strong id="infoUsername">...</strong>
+                </div>
+            </section>
+
+            <section class="section-parametre">
+                <h3 data-i18n="settings_display">Affichage</h3>
+                <div class="carte-parametre row">
+                    <span data-i18n="settings_show_general">Afficher la liste Général</span>
+                    <input type="checkbox" id="checkGeneral" checked>
+                </div>
+            </section>
+
+            <section class="section-parametre">
+                <h3 data-i18n="settings_language">Langue</h3>
+                <div class="carte-parametre row">
+                    <span data-i18n="settings_select_lang">Choisir la langue</span>
+                    <select id="selectLangue">
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+            </section>
+        </div>
     </div>
 
-    <button id="btn_theme"></button>
-    <button id="btn_logout">Logout</button>
+    <button id="btn_theme"data-i18n="btn_theme"></button>
+    <button id="btn_settings" data-i18n="btn_settings">Settings</button>
+    <button id="btn_logout" data-i18n="btn_logout">Logout</button>
 
     <script src="js/app.js" type="module" defer></script>
+
+    <div id="menuContextuel" class="context-menu" style="display: none;">
+        <button id="btnRenameList" data-i18n="menu_rename">Renommer</button>
+        <button id="btnDeleteListCtx" class="danger" data-i18n="menu_delete">Supprimer</button>
+    </div>
 </body>
 </html>
