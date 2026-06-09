@@ -4,13 +4,20 @@ let btnAjouter = document.getElementById('btnAjouter') as HTMLButtonElement;
 let inputTache = document.getElementById('inputTache') as HTMLInputElement;
 let listeTaches = document.getElementById('listeTaches') as HTMLDivElement;
 let btn_logout = document.getElementById('btn_logout') as HTMLButtonElement;
+let menuListes = document.getElementById('menuListes') as HTMLUListElement;
+let btnAjouterListe = document.getElementById('btnAjouterListe') as HTMLButtonElement;
+
+
+let userList = 0;
 
 interface TacheAPI {
     id: number;
     title: string;
     is_completed: number;
 }
-
+//////////////////////////////////////
+//FUNCTIONS
+//////////////////////////////////////
 function displayTask(tache: Tache){
     let balise = document.createElement('div');
     balise.innerText = tache.title;
@@ -69,7 +76,7 @@ function displayTask(tache: Tache){
 }
 
 function loadTasks(){
-    fetch('../api/get_tasks.php')
+    fetch('../api/get_tasks.php?list_id=' + userList)
     .then(reponse => reponse.json())
     .then(tasks => { 
         if (tasks.success === false){
@@ -88,6 +95,36 @@ function loadTasks(){
     })
 }
 
+function loadLists() {
+    fetch('../api/get_lists.php')
+    .then(reponse => reponse.json())
+    .then(lists => { 
+        if (lists.success === true && Array.isArray(lists.lists)) {
+            lists.lists.forEach((list: {id: number, name: string}, index: number) => {
+                if (index === 0) {
+                    userList = list.id;
+                    loadTasks();
+                }
+                let li = document.createElement('li');
+                li.innerText = list.name;
+                li.addEventListener('click', () => {
+                    userList = list.id;
+                    listeTaches.innerHTML = '';
+                    loadTasks();
+                });
+                menuListes.appendChild(li);
+            });
+        } else {
+            console.error("Impossible de charger les listes :", lists);
+        }
+    })
+    .catch(err => console.error("Erreur réseau :", err));
+}
+
+//////////////////////////////////////
+//EVENTS LISTENERS
+//////////////////////////////////////
+
 inputTache.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         btnAjouter.click(); 
@@ -101,7 +138,7 @@ btnAjouter.addEventListener('click', () => {
         return;
     }
     let donneesAEnvoyer = { title: texteSaisi};
-    fetch('../api/add_task.php', {
+    fetch('../api/add_task.php?list_id=' + userList, {
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(donneesAEnvoyer)})
@@ -117,7 +154,26 @@ btnAjouter.addEventListener('click', () => {
         .catch(err => console.error(err))   
 })
 
-loadTasks();
+btnAjouterListe.addEventListener('click', () => {
+    let nomListe = prompt("Entrez le nom de la nouvelle liste :");
+    if (nomListe && nomListe.trim() !== '') {
+        let donneesAEnvoyer = { name: nomListe.trim() };
+        fetch('../api/add_list.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(donneesAEnvoyer)})
+            .then(reponse => reponse.json())
+            .then(data => { console.log(data);
+                if (data.success === true){
+                    menuListes.innerHTML = '';
+                    loadLists();
+                }
+            })
+            .catch(err => console.error(err))
+    } else {
+        alert("Le nom de la liste ne peut pas être vide.");
+    }
+});
 
 btn_logout.addEventListener('click', () => {
     fetch('../api/logout.php')
@@ -130,3 +186,23 @@ btn_logout.addEventListener('click', () => {
     .catch(err => console.error(err))
 });
 
+loadLists();
+
+
+// --- Switch theme ---
+const btnTheme = document.getElementById('btn_theme') as HTMLButtonElement || null;
+
+function appliquerTheme(theme: string) {
+  document.documentElement.setAttribute('data-theme', theme);
+  btnTheme.textContent = (theme === 'dark') ? 'Mode clair' : 'Mode sombre';
+}
+
+// Apply the saved theme or the system preference on page load
+appliquerTheme(localStorage.getItem('theme')
+  || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+btnTheme.addEventListener('click', () => {
+  const nouveau = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('theme', nouveau);
+  appliquerTheme(nouveau);
+});

@@ -20,7 +20,7 @@ btn_login.addEventListener('click', (event) => {
         .then(data => { console.log(data);
             if (data.success === true) {
                 /// Login successful, redirect to the main page
-                window.location.href = '../index.html';
+                window.location.href = 'index.html';
             } else {
                 /// Login failed, display an error message
                 alert('Login failed: ' + data.message);

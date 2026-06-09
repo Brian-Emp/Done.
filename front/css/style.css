@@ -1,0 +1,462 @@
+/* ===================================================================
+   Done.  —  Feuille de style (version minimale, esprit TickTick)
+   -------------------------------------------------------------------
+   Cette feuille habille l'application TELLE QU'ELLE EST.
+   Aucune modification du HTML ni du JavaScript n'est nécessaire :
+   on cible directement tes classes / id existants, et même les
+   tâches terminées (repérées par le style inline "line-through" que
+   pose déjà ton app.js).
+
+   Un seul fichier, à mettre dans :  front/css/style.css
+   (c'est déjà ce que chargent index.html, login.html et register.html)
+
+   Plan :
+     1. Variables (couleurs) + thème clair / sombre
+     2. Base (reset, typographie)
+     3. Mise en page de l'appli (sidebar + zone principale)
+     4. Sidebar (titre, bouton +, menu des listes)
+     5. Zone de saisie (champ + bouton Ajouter)
+     6. Liste des tâches (+ case ronde + tâche terminée)
+     7. Bouton de déconnexion
+     8. Pages connexion / inscription
+     9. Responsive (mobile) + accessibilité
+   =================================================================== */
+
+
+/* ===================================================================
+   1. VARIABLES  —  thème clair par défaut, sombre automatique
+   =================================================================== */
+:root {
+  --fond:        #f6f7f9;   /* fond général                  */
+  --surface:     #ffffff;   /* tâches, cartes                */
+  --surface-2:   #fbfbfc;   /* sidebar                       */
+  --texte:       #1f2329;   /* texte principal               */
+  --texte-doux:  #8a9099;   /* texte secondaire, icônes      */
+  --bordure:     #ebecef;   /* traits de séparation          */
+  --accent:      #3b6ef6;   /* couleur de marque (bleu)      */
+  --accent-doux: rgba(59, 110, 246, 0.10);
+  --danger:      #ef4444;
+  --danger-doux: rgba(239, 68, 68, 0.10);
+
+  --rayon: 10px;
+  --transition: 150ms ease;
+  --police: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Sombre AUTOMATIQUE (selon le système) tant qu'aucun choix manuel n'a été
+   fait, c.-à-d. tant qu'il n'y a pas d'attribut data-theme sur <html>. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --fond:        #0f1115;
+    --surface:     #181b21;
+    --surface-2:   #131519;
+    --texte:       #e8eaed;
+    --texte-doux:  #9aa0a6;
+    --bordure:     #262a31;
+    --accent:      #5b85f7;
+    --accent-doux: rgba(91, 133, 247, 0.16);
+    --danger:      #f0646e;
+    --danger-doux: rgba(240, 100, 110, 0.16);
+  }
+}
+/* Choix MANUEL (prioritaire sur le système) :
+   <html data-theme="dark">  force le sombre,
+   <html data-theme="light"> force le clair (valeurs par défaut du :root). */
+:root[data-theme="dark"] {
+  --fond:        #0f1115;
+  --surface:     #181b21;
+  --surface-2:   #131519;
+  --texte:       #e8eaed;
+  --texte-doux:  #9aa0a6;
+  --bordure:     #262a31;
+  --accent:      #5b85f7;
+  --accent-doux: rgba(91, 133, 247, 0.16);
+  --danger:      #f0646e;
+  --danger-doux: rgba(240, 100, 110, 0.16);
+}
+
+
+/* ===================================================================
+   2. BASE
+   =================================================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--police);
+  background: var(--fond);
+  color: var(--texte);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input  { font-family: inherit; }
+ul     { list-style: none; }
+
+
+/* ===================================================================
+   3. MISE EN PAGE DE L'APPLI
+   La page principale est repérée par la présence de ".sidebar"
+   (grâce à :has, on ne touche pas au <body>). Sidebar à gauche,
+   contenu à droite ; seule la liste défile.
+   =================================================================== */
+.app-layout {
+  display: flex;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+
+/* ===================================================================
+   4. SIDEBAR
+   =================================================================== */
+.sidebar {
+  width: 256px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px 16px;
+  background: var(--surface-2);
+  border-right: 1px solid var(--bordure);
+}
+
+.sidebar h1 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.sidebar p {
+  font-size: 0.8rem;
+  color: var(--texte-doux);
+  margin-bottom: 10px;
+}
+
+/* Bouton "+" (ajouter une liste) */
+#btnAjouterListe {
+  align-self: flex-start;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--texte-doux);
+  border: 1px solid var(--bordure);
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+#btnAjouterListe:hover { background: var(--accent-doux); color: var(--accent); border-color: transparent; }
+
+/* Menu des listes */
+#menuListes { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; }
+#menuListes li {
+  padding: 9px 11px;
+  border-radius: var(--rayon);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--texte-doux);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+#menuListes li:hover { background: var(--accent-doux); color: var(--texte); }
+
+
+/* ===================================================================
+   5. ZONE PRINCIPALE + SAISIE
+   =================================================================== */
+.conteneur-principal {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 28px 0;
+}
+
+.zone-saisie {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+#inputTache {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  font-size: 0.95rem;
+  color: var(--texte);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+#inputTache::placeholder { color: var(--texte-doux); }
+#inputTache:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-doux);
+}
+#btnAjouter {
+  flex-shrink: 0;
+  padding: 0 20px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--rayon);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: filter var(--transition), transform var(--transition);
+}
+#btnAjouter:hover  { filter: brightness(1.08); }
+#btnAjouter:active { transform: scale(0.97); }
+
+
+/* ===================================================================
+   6. LISTE DES TÂCHES
+   Chaque tâche est un <div> (texte + bouton). On les met en ligne,
+   on ajoute une case ronde devant, et on repère les tâches terminées
+   via le style inline "line-through" posé par ton JS.
+   =================================================================== */
+.zone-taches {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 20px;
+}
+
+/* Une tâche */
+.zone-taches > div {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 14px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  word-break: break-word;
+  /* !important neutralise le "color" inline posé par le JS, pour que
+     le texte reste lisible dans les deux thèmes (clair ET sombre) */
+  color: var(--texte) !important;
+  transition: border-color var(--transition);
+}
+.zone-taches > div:hover { border-color: var(--accent); }
+
+/* Case ronde (dessinée en CSS, devant le texte) */
+.zone-taches > div::before {
+  content: "";
+  flex-shrink: 0;
+  width: 21px;
+  height: 21px;
+  border: 2px solid var(--texte-doux);
+  border-radius: 50%;
+  transition: background-color var(--transition), border-color var(--transition);
+}
+.zone-taches > div:hover::before { border-color: var(--accent); }
+
+/* Bouton supprimer : on cache le mot "Delete" et on affiche une croix */
+.zone-taches > div > button {
+  margin-left: auto;          /* pousse la croix à droite */
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 0;               /* masque le texte "Delete" */
+  color: var(--texte-doux);
+  opacity: 0.4;               /* discrète mais toujours visible (pratique au doigt) */
+  transition: opacity var(--transition), background var(--transition), color var(--transition);
+}
+.zone-taches > div > button::after { content: "✕"; font-size: 14px; line-height: 1; }
+.zone-taches > div:hover > button { opacity: 0.75; }                              /* plus visible au survol de la ligne */
+.zone-taches > div > button:hover { opacity: 1; background: var(--danger-doux); color: var(--danger); }
+
+/* --- Tâche TERMINÉE (repérée par le line-through inline du JS) --- */
+.zone-taches > div[style*="line-through"] {
+  color: var(--texte-doux) !important;
+}
+.zone-taches > div[style*="line-through"]::before {
+  border-color: var(--accent);
+  background-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 13px 13px;
+}
+
+
+/* ===================================================================
+   7. DÉCONNEXION
+   Le bouton est hors de la sidebar dans le HTML : on le place en bas
+   à gauche (au-dessus de tout) sans toucher au balisage.
+   =================================================================== */
+#btn_logout {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  width: 224px;            /* largeur sidebar (256) - marges */
+  padding: 10px 12px;
+  border-radius: var(--rayon);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: left;
+  color: var(--texte-doux);
+  transition: background var(--transition), color var(--transition);
+}
+#btn_logout:hover { background: var(--danger-doux); color: var(--danger); }
+
+/* Bouton thème clair / sombre : juste au-dessus de la déconnexion */
+#btn_theme {
+  position: fixed;
+  left: 16px;
+  bottom: 56px;            /* au-dessus du bouton Déconnexion (qui est à 16px) */
+  width: 224px;
+  padding: 10px 12px;
+  border-radius: var(--rayon);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-align: left;
+  color: var(--texte-doux);
+  transition: background var(--transition), color var(--transition);
+}
+#btn_theme:hover { background: var(--accent-doux); color: var(--accent); }
+
+
+/* ===================================================================
+   8. PAGES CONNEXION / INSCRIPTION
+   Repérées par la présence du formulaire (via :has) -> formulaire centré.
+   =================================================================== */
+.auth-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 100dvh;
+  padding: 24px;
+}
+
+#form_login,
+#form_register {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  padding: 30px 26px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+}
+#form_login h2,
+#form_register h2 {
+  margin-bottom: 4px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.auth-layout input,
+.auth-layout input {
+  padding: 12px 14px;
+  background: var(--fond);
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  font-size: 0.95rem;
+  color: var(--texte);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.auth-layout input::placeholder,
+.auth-layout input::placeholder { color: var(--texte-doux); }
+.auth-layout input:focus,
+.auth-layout input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-doux);
+}
+
+#btn_login,
+#btn_register {
+  margin-top: 4px;
+  padding: 12px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--rayon);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: filter var(--transition), transform var(--transition);
+}
+#btn_login:hover,  #btn_register:hover  { filter: brightness(1.08); }
+#btn_login:active, #btn_register:active { transform: scale(0.98); }
+
+/* le lien "Pas de compte ? ..." sous le formulaire */
+.auth-layout a,
+.auth-layout a {
+  font-size: 0.88rem;
+  color: var(--texte-doux);
+  text-decoration: none;
+}
+.auth-layout a:hover,
+.auth-layout a:hover { color: var(--accent); }
+
+
+/* ===================================================================
+   9. RESPONSIVE + ACCESSIBILITÉ
+   =================================================================== */
+/* Mobile : sidebar en haut (compacte), contenu en dessous */
+@media (max-width: 720px) {
+  .app-layout { flex-direction: column; }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 38vh;
+    border-right: none;
+    border-bottom: 1px solid var(--bordure);
+    padding: 18px 16px;
+  }
+  .conteneur-principal { padding: 18px 16px 0; }
+
+  /* La déconnexion repasse en bouton compact en haut à droite */
+  #btn_logout {
+    position: fixed;
+    top: 16px; right: 16px;
+    left: auto; bottom: auto;
+    width: auto;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+  }
+  /* Le bouton thème passe juste en dessous de la déconnexion */
+  #btn_theme {
+    top: 56px; right: 16px;
+    left: auto; bottom: auto;
+    width: auto;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--bordure);
+  }
+}
+
+/* Contour clavier visible */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Respecte "réduire les animations" */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before { transition-duration: 0.01ms !important; }
+}
+
+/* Barre de défilement discrète */
+.zone-taches::-webkit-scrollbar { width: 10px; }
+.zone-taches::-webkit-scrollbar-thumb {
+  background: var(--bordure);
+  border: 3px solid var(--fond);
+  border-radius: 99px;
+}

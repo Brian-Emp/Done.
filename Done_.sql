@@ -10,6 +10,7 @@ CREATE DATABASE IF NOT EXISTS `Done.` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8
 USE `Done.`;
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `tasks`;
+DROP TABLE IF EXISTS `lists`;
 
 -- Structure of the `users` table
 CREATE TABLE `users` (
@@ -21,6 +22,15 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- Structure of the `lists` table
+CREATE TABLE `lists` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- Structure of the `tasks` table
 
 CREATE TABLE `tasks` (
@@ -29,8 +39,20 @@ CREATE TABLE `tasks` (
   `is_completed` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_id` int NOT NULL,
+  `list_id` int NOT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`list_id`) REFERENCES `lists`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Trigger to mandatory add a 'general' list for each new user
+DELIMITER $$
+CREATE TRIGGER after_user_insert
+AFTER INSERT ON `users`
+FOR EACH ROW
+BEGIN
+    INSERT INTO `lists` (name, user_id) VALUES ('Général', NEW.id);
+END$$
+DELIMITER ;
 
 COMMIT;
