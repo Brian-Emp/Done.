@@ -3,22 +3,34 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 --
--- Base de données : `Done.`
+-- Database : `Done.`
 --
+DROP DATABASE IF EXISTS `Done.`;
 CREATE DATABASE IF NOT EXISTS `Done.` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE `Done.`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `tasks`;
 
--- --------------------------------------------------------
+-- Structure of the `users` table
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL UNIQUE,
+  `password` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Structure de la table `tasks`
---
+-- Structure of the `tasks` table
+
 CREATE TABLE `tasks` (
   `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `is_completed` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 COMMIT;

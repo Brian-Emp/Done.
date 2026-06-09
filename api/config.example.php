@@ -1,8 +1,8 @@
 <?php
 $host = 'localhost';
-$port = '8889'; // Le port MAMP Mac
+$port = '[YOUR_PORT_HERE]';
 $dbname = 'Done.';
-$username = 'YoUR_USERNAME_HERE';
+$username = 'YOUR_USERNAME_HERE';
 $password = 'YOUR_PASSWORD_HERE'; 
 
 try {

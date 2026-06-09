@@ -1,4 +1,6 @@
 api/config.php
+front/js
+*.js
 
 .DS_Store
 .AppleDouble

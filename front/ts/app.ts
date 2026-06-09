@@ -3,6 +3,7 @@ import { Tache } from "./Tache.js";
 let btnAjouter = document.getElementById('btnAjouter') as HTMLButtonElement;
 let inputTache = document.getElementById('inputTache') as HTMLInputElement;
 let listeTaches = document.getElementById('listeTaches') as HTMLDivElement;
+let btn_logout = document.getElementById('btn_logout') as HTMLButtonElement;
 
 interface TacheAPI {
     id: number;
@@ -24,7 +25,7 @@ function displayTask(tache: Tache){
         event.stopPropagation();
         let donneesAEnvoyer = { id: tache.id };
         /// Send a request to delete the task from the database
-        fetch('delete_task.php', {
+        fetch('../api/delete_task.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(donneesAEnvoyer)})
@@ -45,7 +46,7 @@ function displayTask(tache: Tache){
     /// Event listener change the state of the task when clicked
     balise.addEventListener('click', () => {
         let donneesAEnvoyer = { id: tache.id };
-        fetch('update_task.php', {
+        fetch('../api/update_task.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(donneesAEnvoyer)})
@@ -68,17 +69,30 @@ function displayTask(tache: Tache){
 }
 
 function loadTasks(){
-    fetch('get_tasks.php')
+    fetch('../api/get_tasks.php')
     .then(reponse => reponse.json())
-    .then(tasks => { tasks.forEach((task: TacheAPI) => {
-        let t = new Tache(task.title);
-        t.id = task.id;
-        if (task.is_completed === 1){
-            t.ChangeState();
+    .then(tasks => { 
+        if (tasks.success === false){
+            window.location.href = 'login.html';
+            return;
+        } else {
+            tasks.forEach((task: TacheAPI) => {
+            let t = new Tache(task.title);
+            t.id = task.id;
+            if (task.is_completed === 1){
+                t.ChangeState();
+            }
+            displayTask(t);
+            });
         }
-        displayTask(t);
-    });})
+    })
 }
+
+inputTache.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        btnAjouter.click(); 
+    }
+});
 
 btnAjouter.addEventListener('click', () => {
     let texteSaisi = inputTache.value;
@@ -87,7 +101,7 @@ btnAjouter.addEventListener('click', () => {
         return;
     }
     let donneesAEnvoyer = { title: texteSaisi};
-    fetch('add_task.php', {
+    fetch('../api/add_task.php', {
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(donneesAEnvoyer)})
@@ -104,3 +118,15 @@ btnAjouter.addEventListener('click', () => {
 })
 
 loadTasks();
+
+btn_logout.addEventListener('click', () => {
+    fetch('../api/logout.php')
+    .then(reponse => reponse.json())
+    .then(data => { console.log(data);
+        if (data.success === true){
+            window.location.href = 'login.html';
+        }
+    })
+    .catch(err => console.error(err))
+});
+
