@@ -1,6 +1,7 @@
 import { Tache } from "./Tache.js";
 import { langueActive, dictionnaire } from "./dico.js";
 
+//ELEMENTS DEFINITION//
 let btnAjouter = document.getElementById('btnAjouter') as HTMLButtonElement;
 let inputTache = document.getElementById('inputTache') as HTMLInputElement;
 let listeTaches = document.getElementById('listeTaches') as HTMLDivElement;
@@ -11,29 +12,45 @@ let titreListeActive = document.getElementById('titreListeActive') as HTMLHeadin
 let menuContextuel = document.getElementById('menuContextuel') as HTMLDivElement;
 let btnDeleteListCtx = document.getElementById('btnDeleteListCtx') as HTMLButtonElement;
 let btnRenameListCtx = document.getElementById('btnRenameList') as HTMLButtonElement;
+let btn_settings = document.getElementById('btn_settings') as HTMLButtonElement;
+let zoneParametres = document.getElementById('zoneParametres') as HTMLDivElement;
+let zoneSaisie = document.querySelector('.zone-saisie') as HTMLDivElement;
+let infoUsername = document.getElementById('infoUsername') as HTMLElement;
+
 let listeCibleId: number = 0;
 let listeCibleNom: string = '';
-
+const btnTheme = document.getElementById('btn_theme') as HTMLButtonElement || null;
 let userList = 0;
 
+//INTERFACES//
 interface TacheAPI {
     id: number;
     title: string;
     is_completed: number;
 }
-//////////////////////////////////////
-//FUNCTIONS
-//////////////////////////////////////
+
+//FUNCTIONS//
 function appliquerTraduction() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (key === 'input_placeholder' && el instanceof HTMLInputElement) {
-            el.placeholder = dictionnaire[langueActive][key];
-        } 
-        else (key && dictionnaire[langueActive] && dictionnaire[langueActive][key]) {
-            el.textContent = dictionnaire[langueActive][key];
+        if (!key) return; 
+        const traductions = dictionnaire[langueActive];
+        if (traductions && traductions[key]) {
+            const texteTraduit = traductions[key];
+            if (key === 'input_placeholder' && el instanceof HTMLInputElement) {
+                el.placeholder = texteTraduit;
+            } else {
+                el.textContent = texteTraduit;
+            }
         }
     });
+}
+
+function appliquerTheme(theme: string) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const texteClair = dictionnaire[langueActive]?.['settings_light'] || 'Light';
+    const texteSombre = dictionnaire[langueActive]?.['settings_dark'] || 'Dark';
+    btnTheme.textContent = (theme === 'dark') ? texteClair : texteSombre;
 }
 
 function displayTask(tache: Tache){
@@ -151,8 +168,16 @@ function loadLists() {
                     titreListeActive.innerText = list.name;
                     userList = list.id;
                     listeTaches.innerHTML = '';
+                    zoneParametres.style.display = 'none';
+                    zoneSaisie.style.display = 'flex';
+                    listeTaches.style.display = 'flex';
+                    document.querySelectorAll('#menuListes li').forEach(el => (el as HTMLLIElement).style.cursor = 'pointer');
                     loadTasks();
                 });
+                // If general display is disabled, hide it
+                if (index === 0 && !afficherGeneral) {
+                    li.style.display = 'none';
+                }
                 menuListes.appendChild(li);
             });
         } else {
@@ -162,10 +187,20 @@ function loadLists() {
     .catch(err => console.error("Erreur réseau :", err));
 }
 
-//////////////////////////////////////
-//EVENTS LISTENERS
-//////////////////////////////////////
+function loadUserInfo() {
+    fetch('../api/get_user.php')
+    .then(reponse => reponse.json())
+    .then(data => {
+        if (data.success === true && data.user) {
+            infoUsername.textContent = data.user['username'];
+        } else {
+            console.error("Impossible de charger les informations de l'utilisateur :", data);
+        }
+    })
+    .catch(err => console.error("Erreur réseau :", err));
+}
 
+//EVENTS LISTENERS//
 inputTache.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         btnAjouter.click(); 
@@ -263,6 +298,55 @@ btnAjouterListe.addEventListener('click', () => {
     }
 });
 
+btn_settings.addEventListener('click', () => {
+    if (zoneParametres.style.display === 'flex') {
+        let premierDossier = document.querySelector('#menuListes li') as HTMLLIElement;
+        if (premierDossier) premierDossier.click();
+        titreListeActive.innerText = document.querySelector('#menuListes li.liste-active')?.textContent || '';
+    } else {
+        zoneSaisie.style.display = 'none';
+        listeTaches.style.display = 'none';
+        titreListeActive.innerText = dictionnaire[langueActive]?.['settings_title'] || 'Settings';
+        document.querySelectorAll('#menuListes li').forEach(el => el.classList.remove('liste-active'));
+        document.querySelectorAll('#menuListes li').forEach(el => (el as HTMLLIElement).style.cursor = 'not-allowed');
+        zoneParametres.style.display = 'flex';
+    }
+});
+
+// LANGUAGE SELECTION //
+let selectLangue = document.getElementById('selectLangue') as HTMLSelectElement;
+selectLangue.value = langueActive;
+
+selectLangue.addEventListener('change', () => {
+    // Save the selected language in localStorage
+    localStorage.setItem('langue', selectLangue.value);
+    // Reload the page to apply the new language
+    window.location.reload();
+});
+
+// GENERAL DISPLAY //
+let checkGeneral = document.getElementById('checkGeneral') as HTMLInputElement;
+let afficherGeneral: boolean = localStorage.getItem('afficherGeneral') !== 'false';
+// Set it on the checkbox
+checkGeneral.checked = afficherGeneral;
+
+checkGeneral.addEventListener('change', () => {
+    // Save localStorage
+    localStorage.setItem('afficherGeneral', checkGeneral.checked.toString());
+    afficherGeneral = checkGeneral.checked;
+    // Empty and reload
+    menuListes.innerHTML = '';
+    loadLists();
+});
+
+// THEME SWITCH //
+btnTheme.addEventListener('click', () => {
+  const nouveau = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('theme', nouveau);
+  appliquerTheme(nouveau);
+});
+
+// LOGOUT //
 btn_logout.addEventListener('click', () => {
     fetch('../api/logout.php')
     .then(reponse => reponse.json())
@@ -274,23 +358,8 @@ btn_logout.addEventListener('click', () => {
     .catch(err => console.error(err))
 });
 
+//INITIALIZATION//
 loadLists();
+loadUserInfo();
 appliquerTraduction();
-
-// --- Switch theme ---
-const btnTheme = document.getElementById('btn_theme') as HTMLButtonElement || null;
-
-function appliquerTheme(theme: string) {
-  document.documentElement.setAttribute('data-theme', theme);
-  btnTheme.textContent = (theme === 'dark') ? 'Mode clair' : 'Mode sombre';
-}
-
-// Apply the saved theme or the system preference on page load
-appliquerTheme(localStorage.getItem('theme')
-  || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-
-btnTheme.addEventListener('click', () => {
-  const nouveau = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  localStorage.setItem('theme', nouveau);
-  appliquerTheme(nouveau);
-});
+appliquerTheme(localStorage.getItem('theme')|| (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));

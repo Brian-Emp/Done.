@@ -10,8 +10,12 @@ export const dictionnaire: Record<string, Record<string, string>> = {
         settings_account: "Account",
         settings_logged_as: "Logged in as ",
         settings_display: "Display",
-
+        settings_show_general: "Show the 'General' list",
         settings_language: "Language",
+        settings_select_lang: "Select a language",
+        btn_theme: "Theme",
+        btn_settings: "Settings",
+
         settings_theme: "Theme",
         settings_dark: "Dark",
         settings_light: "Light",
@@ -26,10 +30,16 @@ export const dictionnaire: Record<string, Record<string, string>> = {
         settings_title: "Paramètres",
         settings_account: "Compte",
         settings_language: "Langue",
+        settings_logged_as: "Connecté en tant que ",
+        settings_display: "Affichage",
+        settings_show_general: "Afficher la liste 'Général'",
+        settings_select_lang: "Sélectionnez une langue",
+        btn_theme: "Thème",
+        btn_settings: "Paramètres",
+        
         settings_theme: "Thème",
         settings_dark: "Sombre",
         settings_light: "Clair",
-        settings_logged_as: "Connecté en tant que "
     }
 };
 
