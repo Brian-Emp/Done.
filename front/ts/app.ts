@@ -138,7 +138,13 @@ function loadTasks(){
 
 function loadLists() {
     fetch('../api/get_lists.php')
-    .then(reponse => reponse.json())
+    .then(reponse => {
+        if (reponse.status === 401) {
+            window.location.href = 'login.html';
+            throw new Error("Non connecté, redirection...");
+        }
+        return reponse.json();
+    })
     .then(lists => { 
         if (lists.success === true && Array.isArray(lists.lists)) {
             lists.lists.forEach((list: {id: number, name: string}, index: number) => {
@@ -189,10 +195,18 @@ function loadLists() {
 
 function loadUserInfo() {
     fetch('../api/get_user.php')
-    .then(reponse => reponse.json())
+    .then(reponse => {
+        if (reponse.status === 401) {
+            window.location.href = 'login.html';
+            throw new Error("Non connecté, redirection...");
+        }
+        return reponse.json();
+    })
     .then(data => {
         if (data.success === true && data.user) {
             infoUsername.textContent = data.user['username'];
+            document.body.style.opacity = '1';
+            document.body.style.pointerEvents = 'auto';
         } else {
             console.error("Impossible de charger les informations de l'utilisateur :", data);
         }

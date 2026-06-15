@@ -51,8 +51,22 @@ CREATE TRIGGER after_user_insert
 AFTER INSERT ON `users`
 FOR EACH ROW
 BEGIN
-    INSERT INTO `lists` (name, user_id) VALUES ('Général', NEW.id);
+    INSERT INTO `lists` (name, user_id) VALUES ('📌 Général', NEW.id);
 END$$
 DELIMITER ;
+
+-- Dumping data 
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `created_at`) VALUES
+(1, 'Brian', 'brian.empereur@icloud.com', '$2y$10$9pxIu5dnGNsoHQ9TPQ50IekunfE1C3uQ/0bVYP/SeExkdweyY0xk6', '2026-06-11 12:00:00');
+INSERT INTO `lists` (`id`, `name`, `user_id`) VALUES
+(2, '🔒 Perso', 1),
+(3, '💼 Travail', 1),
+(4, '🎉 Projets', 1),
+(5, '📚 Études', 1);
+INSERT INTO `tasks` (`id`, `title`, `is_completed`, `created_at`, `user_id`, `list_id`) VALUES
+(1, 'Terminer le projet Done.', 0, '2026-06-11 12:00:00', 1, 1),
+(2, 'Faire les courses', 0, '2026-06-11 13:00:00', 1, 2),
+(3, 'Appeler le plombier', 1, '2026-06-11 14:00:00', 1, 2),
+(4, 'Planifier les vacances', 0, '2026-06-11 15:00:00', 1, 2);
 
 COMMIT;

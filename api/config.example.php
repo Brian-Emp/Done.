@@ -17,4 +17,3 @@ try {
     // Si MAMP est éteint ou le mot de passe faux, on coupe tout
     die("Erreur de connexion à la base de données : " . $e->getMessage());
 }
-?>

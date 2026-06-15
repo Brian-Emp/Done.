@@ -3,8 +3,11 @@ front/js
 *.js
 
 .DS_Store
+**/.DS_Store
 .AppleDouble
 .LSOverride
 
 .vscode/
 .idea/
+
+.log

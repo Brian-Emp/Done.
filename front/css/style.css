@@ -1,29 +1,4 @@
 /* ===================================================================
-   Done.  —  Feuille de style (version minimale, esprit TickTick)
-   -------------------------------------------------------------------
-   Cette feuille habille l'application TELLE QU'ELLE EST.
-   Aucune modification du HTML ni du JavaScript n'est nécessaire :
-   on cible directement tes classes / id existants, et même les
-   tâches terminées (repérées par le style inline "line-through" que
-   pose déjà ton app.js).
-
-   Un seul fichier, à mettre dans :  front/css/style.css
-   (c'est déjà ce que chargent index.html, login.html et register.html)
-
-   Plan :
-     1. Variables (couleurs) + thème clair / sombre
-     2. Base (reset, typographie)
-     3. Mise en page de l'appli (sidebar + zone principale)
-     4. Sidebar (titre, bouton +, menu des listes)
-     5. Zone de saisie (champ + bouton Ajouter)
-     6. Liste des tâches (+ case ronde + tâche terminée)
-     7. Bouton de déconnexion
-     8. Pages connexion / inscription
-     9. Responsive (mobile) + accessibilité
-   =================================================================== */
-
-
-/* ===================================================================
    1. VARIABLES  —  thème clair par défaut, sombre automatique
    =================================================================== */
 :root {
@@ -104,6 +79,11 @@ ul     { list-style: none; }
   display: flex;
   height: 100dvh;
   overflow: hidden;
+
+  /* Default hyde */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
 }
 
 
