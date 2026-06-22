@@ -40,8 +40,6 @@ It's built **without any framework**: a typed TypeScript frontend talking to a s
 | Right-click a list to rename or delete | Settings panel (account, display, language) | Session-guarded API on every endpoint |
 | Auto-created "Général" list per user | Toggle visibility of the "Général" list | Auto-redirect to login when the session expires |
 | Completed tasks sink and strike through | Keyboard-friendly (Enter to add) | Logout |
-| | Switch language (en & fr available) | Show/hide the default `General` list |
-| | | Settings page with username & preferences
 
 ---
 
