@@ -16,10 +16,15 @@ let btn_settings = document.getElementById('btn_settings') as HTMLButtonElement;
 let zoneParametres = document.getElementById('zoneParametres') as HTMLDivElement;
 let zoneSaisie = document.querySelector('.zone-saisie') as HTMLDivElement;
 let infoUsername = document.getElementById('infoUsername') as HTMLElement;
+let inputNewUsername = document.getElementById('inputNewUsername') as HTMLInputElement;
+let btnUpdateUsername = document.getElementById('btnUpdateUsername') as HTMLButtonElement;
+let feedbackUsername = document.getElementById('feedbackUsername') as HTMLSpanElement;
+let infoEmail = document.getElementById('infoEmail') as HTMLElement;
 
 let listeCibleId: number = 0;
 let listeCibleNom: string = '';
-const btnTheme = document.getElementById('btn_theme') as HTMLButtonElement || null;
+const themeSwitch = document.getElementById('themeSwitch') as HTMLDivElement;
+const themeButtons = themeSwitch.querySelectorAll<HTMLButtonElement>('[data-theme-value]');
 let userList = 0;
 
 //INTERFACES//
@@ -30,6 +35,17 @@ interface TacheAPI {
 }
 
 //FUNCTIONS//
+function afficherFeedback(el: HTMLElement, cleTraduction: string, type: 'success' | 'error') {
+    const msg = dictionnaire[langueActive]?.[cleTraduction] || cleTraduction;
+    el.textContent = msg;
+    el.classList.remove('success', 'error');
+    el.classList.add(type);
+    setTimeout(() => {
+        el.textContent = '';
+        el.classList.remove('success', 'error');
+    }, 3000);
+}
+
 function appliquerTraduction() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
@@ -48,9 +64,9 @@ function appliquerTraduction() {
 
 function appliquerTheme(theme: string) {
     document.documentElement.setAttribute('data-theme', theme);
-    const texteClair = dictionnaire[langueActive]?.['settings_light'] || 'Light';
-    const texteSombre = dictionnaire[langueActive]?.['settings_dark'] || 'Dark';
-    btnTheme.textContent = (theme === 'dark') ? texteClair : texteSombre;
+    themeButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.themeValue === theme);
+    });
 }
 
 function displayTask(tache: Tache){
@@ -354,10 +370,53 @@ checkGeneral.addEventListener('change', () => {
 });
 
 // THEME SWITCH //
-btnTheme.addEventListener('click', () => {
-  const nouveau = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  localStorage.setItem('theme', nouveau);
-  appliquerTheme(nouveau);
+themeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const nouveau = btn.dataset.themeValue;
+        if (!nouveau) return;
+        localStorage.setItem('theme', nouveau);
+        appliquerTheme(nouveau);
+    });
+});
+
+// UPDATE USERNAME //
+btnUpdateUsername.addEventListener('click', () => {
+    const nouveau = inputNewUsername.value.trim();
+    
+    // Garde 1 : champ vide
+    // → afficherFeedback avec 'feedback_username_empty' + 'error' + return
+    if (nouveau === '') {
+        afficherFeedback(feedbackUsername, 'feedback_username_empty', 'error');
+        return;
+    }
+    
+    // Garde 2 : identique à l'actuel (compare avec infoUsername.textContent)
+    // → afficherFeedback avec 'feedback_username_same' + 'error' + return
+    
+    // Appel API
+    fetch('../api/update_username.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: nouveau })
+    })
+    .then(reponse => {
+        if (reponse.status === 401) {
+            window.location.href = 'login.html';
+            throw new Error("Non connecté");
+        }
+        return reponse.json();
+    })
+    .then(data => {
+        if (data.success === true) {
+            // MAJ visuelle : infoUsername.textContent = data.username
+            // Vider inputNewUsername
+            // afficherFeedback succès avec 'feedback_username_success' + 'success'
+        } else {
+            // Erreur backend : afficher data.message
+            // → afficherFeedback(feedbackUsername, data.message, 'error')
+        }
+    })
+    .catch(err => console.error(err));
 });
 
 // LOGOUT //

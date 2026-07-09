@@ -27,11 +27,25 @@
         <div id="listeTaches" class="zone-taches">
         </div>
         <div id="zoneParametres" class="zone-parametres " style="display: none;">
-
             <section class="section-parametre">
                 <h3 data-i18n="settings_account">Mon Compte</h3>
                 <div class="carte-parametre">
+                    <span data-i18n="settings_email">Email</span>
+                    <strong id="infoEmail"></strong>
+                </div>
+                <div class="carte-parametre carte-formulaire">
+                    <span data-i18n="settings_username">Nom d'utilisateur</span>
                     <strong id="infoUsername"></strong>
+                    <input type="text" id="inputNewUsername" placeholder="Nouveau nom d'utilisateur" maxlength="255">
+                    <button id="btnUpdateUsername" type="button" data-i18n="btn_save">Enregistrer</button>
+                    <span id="feedbackUsername" class="feedback"></span>
+                </div>
+                <div class="carte-parametre carte-formulaire">
+                    <span data-i18n="settings_password">Mot de passe</span>
+                    <input type="password" id="inputOldPassword" placeholder="Mot de passe actuel">
+                    <input type="password" id="inputNewPassword" placeholder="Nouveau mot de passe">
+                    <button id="btnUpdatePassword" type="button" data-i18n="btn_save">Enregistrer</button>
+                    <span id="feedbackPassword" class="feedback"></span>
                 </div>
             </section>
 
@@ -40,6 +54,14 @@
                 <div class="carte-parametre row">
                     <span data-i18n="settings_show_general">Afficher la liste Général</span>
                     <input type="checkbox" id="checkGeneral" checked>
+                </div>
+                <h3 data-i18n="settings_theme">Thème</h3>
+                <div class="carte-parametre row">
+                    <span data-i18n="btn_theme">Choisir le thème</span>
+                    <div class="segmented-control" id="themeSwitch">
+                        <button type="button" data-theme-value="light" data-i18n="settings_light">Clair</button>
+                        <button type="button" data-theme-value="dark" data-i18n="settings_dark">Sombre</button>
+                    </div>
                 </div>
             </section>
 
@@ -56,7 +78,6 @@
         </div>
     </div>
 
-    <button id="btn_theme" data-i18n="btn_theme"></button>
     <button id="btn_settings" data-i18n="btn_settings">Settings</button>
     <button id="btn_logout" data-i18n="btn_logout">Logout</button>
 

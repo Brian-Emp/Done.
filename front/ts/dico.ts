@@ -16,9 +16,19 @@ export const dictionnaire: Record<string, Record<string, string>> = {
         btn_theme: "Theme",
         btn_settings: "Settings",
 
-        settings_theme: "Theme",
         settings_dark: "Dark",
         settings_light: "Light",
+        settings_email: "Email",
+        settings_username: "Username",
+        settings_password: "Password",
+        settings_theme: "Theme",
+        btn_save: "Save",
+        feedback_username_success: "Username updated",
+        feedback_username_empty: "Field is empty",
+        feedback_username_same: "Same as current",
+        feedback_password_success: "Password updated",
+        feedback_password_empty: "Both fields are required",
+        feedback_password_weak: "8 chars min, 1 uppercase, 1 lowercase, 1 digit",
     },
     fr: {
         app_subtitle: "Focus & Productivité",
@@ -37,9 +47,19 @@ export const dictionnaire: Record<string, Record<string, string>> = {
         btn_theme: "Thème",
         btn_settings: "Paramètres",
         
-        settings_theme: "Thème",
         settings_dark: "Sombre",
         settings_light: "Clair",
+        settings_email: "Email",
+        settings_username: "Nom d'utilisateur",
+        settings_password: "Mot de passe",
+        settings_theme: "Thème",
+        btn_save: "Enregistrer",
+        feedback_username_success: "Nom d'utilisateur mis à jour",
+        feedback_username_empty: "Le champ est vide",
+        feedback_username_same: "Identique à l'actuel",
+        feedback_password_success: "Mot de passe mis à jour",
+        feedback_password_empty: "Les deux champs sont requis",
+        feedback_password_weak: "8 caractères min, 1 majuscule, 1 minuscule, 1 chiffre",
     }
 };
 

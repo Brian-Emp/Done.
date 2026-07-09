@@ -529,6 +529,101 @@ ul     { list-style: none; }
   outline: none;
 }
 
+/* Cartes contenant un formulaire (pseudo, mot de passe) */
+.carte-parametre.carte-formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Le label de la carte formulaire (Nom d'utilisateur, Mot de passe) */
+.carte-parametre.carte-formulaire > span {
+  font-size: 0.85rem;
+  color: var(--texte-doux);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Le username actuel affiché dans la carte formulaire pseudo */
+.carte-parametre.carte-formulaire > strong {
+  font-size: 1rem;
+  color: var(--texte);
+  margin-bottom: 4px;
+}
+
+.carte-parametre.carte-formulaire input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--fond);
+  color: var(--texte);
+  border: 1px solid var(--bordure);
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.carte-parametre.carte-formulaire input:focus {
+  border-color: var(--accent);
+}
+
+.carte-parametre.carte-formulaire button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  align-self: flex-start; /* le bouton ne prend pas toute la largeur */
+  transition: opacity var(--transition);
+}
+
+.carte-parametre.carte-formulaire button:hover {
+  opacity: 0.85;
+}
+
+.feedback {
+  font-size: 0.85rem;
+  min-height: 1.2em;         /* évite les sauts de layout quand vide */
+  transition: color var(--transition);
+}
+
+.feedback.success { color: #22c55e; }  /* vert */
+.feedback.error   { color: var(--danger); }
+
+.segmented-control {
+  display: inline-flex;
+  background: var(--fond);
+  border: 1px solid var(--bordure);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.segmented-control button {
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  color: var(--texte-doux);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background var(--transition), color var(--transition);
+}
+
+.segmented-control button:hover {
+  color: var(--texte);
+}
+
+.segmented-control button.active {
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 /* Repositionnement du bouton paramètre dans le coin mobile si besoin */
 #btn_settings {
   position: fixed;
