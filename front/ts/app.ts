@@ -1,40 +1,64 @@
+/////////////////////////////////////////// DEFINITION DES VARIABLES ///////////////////////////////////////////
 import { Tache } from "./Tache.js";
 import { langueActive, dictionnaire } from "./dico.js";
 
-//ELEMENTS DEFINITION//
+//Elements HTML ecran principal
 let btnAjouter = document.getElementById('btnAjouter') as HTMLButtonElement;
 let inputTache = document.getElementById('inputTache') as HTMLInputElement;
 let listeTaches = document.getElementById('listeTaches') as HTMLDivElement;
 let btn_logout = document.getElementById('btn_logout') as HTMLButtonElement;
+
+//Listes et parametres (clic droit) de listes
 let menuListes = document.getElementById('menuListes') as HTMLUListElement;
 let btnAjouterListe = document.getElementById('btnAjouterListe') as HTMLButtonElement;
 let titreListeActive = document.getElementById('titreListeActive') as HTMLHeadingElement;
 let menuContextuel = document.getElementById('menuContextuel') as HTMLDivElement;
 let btnDeleteListCtx = document.getElementById('btnDeleteListCtx') as HTMLButtonElement;
 let btnRenameListCtx = document.getElementById('btnRenameList') as HTMLButtonElement;
+
+//Settings (btn et ecran)
 let btn_settings = document.getElementById('btn_settings') as HTMLButtonElement;
 let zoneParametres = document.getElementById('zoneParametres') as HTMLDivElement;
 let zoneSaisie = document.querySelector('.zone-saisie') as HTMLDivElement;
+
+//Username et changement username dans settings
 let infoUsername = document.getElementById('infoUsername') as HTMLElement;
 let inputNewUsername = document.getElementById('inputNewUsername') as HTMLInputElement;
 let btnUpdateUsername = document.getElementById('btnUpdateUsername') as HTMLButtonElement;
 let feedbackUsername = document.getElementById('feedbackUsername') as HTMLSpanElement;
 let infoEmail = document.getElementById('infoEmail') as HTMLElement;
 
+//Password et changement password dans settings
+let inputOldPassword = document.getElementById('inputOldPassword') as HTMLInputElement;
+let inputNewPassword = document.getElementById('inputNewPassword') as HTMLInputElement;
+let btnUpdatePassword = document.getElementById('btnUpdatePassword') as HTMLButtonElement;
+let feedbackPassword = document.getElementById('feedbackPassword') as HTMLSpanElement;
+
+//Variables autres
 let listeCibleId: number = 0;
 let listeCibleNom: string = '';
 const themeSwitch = document.getElementById('themeSwitch') as HTMLDivElement;
 const themeButtons = themeSwitch.querySelectorAll<HTMLButtonElement>('[data-theme-value]');
 let userList = 0;
 
-//INTERFACES//
+/////////////////////////////////////////// INTERFACES ///////////////////////////////////////////
 interface TacheAPI {
     id: number;
     title: string;
     is_completed: number;
 }
 
-//FUNCTIONS//
+/////////////////////////////////////////// FONCTIONS ///////////////////////////////////////////
+function resetFormulairesParametres() {
+    inputNewUsername.value = '';
+    inputOldPassword.value = '';
+    inputNewPassword.value = '';
+    feedbackUsername.textContent = '';
+    feedbackUsername.classList.remove('success', 'error');
+    feedbackPassword.textContent = '';
+    feedbackPassword.classList.remove('success', 'error');
+}
+
 function afficherFeedback(el: HTMLElement, cleTraduction: string, type: 'success' | 'error') {
     const msg = dictionnaire[langueActive]?.[cleTraduction] || cleTraduction;
     el.textContent = msg;
@@ -79,10 +103,9 @@ function displayTask(tache: Tache){
     balise.appendChild(btnSupprimer);
 
     btnSupprimer.addEventListener('click', (event) => {
-        /// Prevent the click event from propagating to the parent div
+        /// Evite que le clic declenche l'event listener du parent (balise)
         event.stopPropagation();
         let donneesAEnvoyer = { id: tache.id };
-        /// Send a request to delete the task from the database
         fetch('../api/delete_task.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -90,21 +113,20 @@ function displayTask(tache: Tache){
             .then(reponse => reponse.json())
             .then(data => { console.log(data);
                 if (data.success === true) {
-                    /// Deletion successful, remove the task from the UI
                     balise.remove();
                 }
             })
             .catch(err => console.error(err))
 });
-    /// If the task completed at creation, line-through style
+    /// Si la tache est terminee, on la barre et on la met en gris
     if (tache.estTermine){
         balise.style.textDecoration = 'line-through';
-        balise.style.color = 'gray';
+        balise.style.color = 'var(--texte-doux)';
         balise.style.order = '1';
     } else {
         balise.style.order = '0';
     }
-    /// Event listener change the state of the task when clicked
+    /// Chagement de l'etat de la tache en bdd après clic
     balise.addEventListener('click', () => {
         let donneesAEnvoyer = { id: tache.id };
         fetch('../api/update_task.php', {
@@ -121,7 +143,7 @@ function displayTask(tache: Tache){
                         balise.style.order = '1';
                     } else {
                         balise.style.textDecoration = 'none';
-                        balise.style.color = 'black';
+                        balise.style.color = 'var(--texte)';
                         balise.style.order = '0';
                     }
                 }
@@ -191,6 +213,7 @@ function loadLists() {
                     userList = list.id;
                     listeTaches.innerHTML = '';
                     zoneParametres.style.display = 'none';
+                    resetFormulairesParametres();
                     zoneSaisie.style.display = 'flex';
                     listeTaches.style.display = 'flex';
                     document.querySelectorAll('#menuListes li').forEach(el => (el as HTMLLIElement).style.cursor = 'pointer');
@@ -221,6 +244,7 @@ function loadUserInfo() {
     .then(data => {
         if (data.success === true && data.user) {
             infoUsername.textContent = data.user['username'];
+            infoEmail.innerText = data.user['email'];
             document.body.style.opacity = '1';
             document.body.style.pointerEvents = 'auto';
         } else {
@@ -230,17 +254,20 @@ function loadUserInfo() {
     .catch(err => console.error("Erreur réseau :", err));
 }
 
-//EVENTS LISTENERS//
+/////////////////////////////////////////// EVENTS LISTENERS ///////////////////////////////////////////
+// INPUT TACHE (Entrer) //
 inputTache.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         btnAjouter.click(); 
     }
 });
 
+// DISPARITION DU MENU CONTEXTUEL (clic gauche) //
 document.addEventListener('click', () => {
     menuContextuel.style.display = 'none';
 });
 
+// BOUTON RENOMMER LISTE (clique droit) //
 btnRenameListCtx.addEventListener('click', () => {
     let nouveauNom = prompt("Entrez le nouveau nom de la liste :", listeCibleNom);
     if (nouveauNom && nouveauNom.trim() !== '') {
@@ -263,6 +290,7 @@ btnRenameListCtx.addEventListener('click', () => {
     }
 });
 
+// BOUTON SUPPRIMER LISTE (clique droit) //
 btnDeleteListCtx.addEventListener('click', () => {
     if (!confirm(`Êtes-vous sûr de vouloir supprimer la liste "${listeCibleNom}" ?`)) {
         return;
@@ -284,6 +312,7 @@ btnDeleteListCtx.addEventListener('click', () => {
     .catch(err => console.error(err));
 });
 
+// BOUTON AJOUTER TACHE (add) //
 btnAjouter.addEventListener('click', () => {
     let texteSaisi = inputTache.value;
     if (texteSaisi == ''){
@@ -307,6 +336,7 @@ btnAjouter.addEventListener('click', () => {
         .catch(err => console.error(err))   
 })
 
+// BOUTON AJOUTER LISTE (+) //
 btnAjouterListe.addEventListener('click', () => {
     let nomListe = prompt("Entrez le nom de la nouvelle liste :");
     if (nomListe && nomListe.trim() !== '') {
@@ -328,6 +358,7 @@ btnAjouterListe.addEventListener('click', () => {
     }
 });
 
+// BOUTON PARAMETRES //
 btn_settings.addEventListener('click', () => {
     if (zoneParametres.style.display === 'flex') {
         let premierDossier = document.querySelector('#menuListes li') as HTMLLIElement;
@@ -343,28 +374,30 @@ btn_settings.addEventListener('click', () => {
     }
 });
 
-// LANGUAGE SELECTION //
-let selectLangue = document.getElementById('selectLangue') as HTMLSelectElement;
-selectLangue.value = langueActive;
-
-selectLangue.addEventListener('change', () => {
-    // Save the selected language in localStorage
-    localStorage.setItem('langue', selectLangue.value);
-    // Reload the page to apply the new language
-    window.location.reload();
+// LANGUAGE //
+const langueSwitch = document.getElementById('langueSwitch') as HTMLDivElement;
+const langueButtons = langueSwitch.querySelectorAll<HTMLButtonElement>('[data-langue-value]');
+langueButtons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.langueValue === langueActive);
+});
+langueButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const nouvelle = btn.dataset.langueValue;
+        if (!nouvelle) return;
+        localStorage.setItem('langue', nouvelle);
+        window.location.reload();
+    });
 });
 
-// GENERAL DISPLAY //
+// AFFICHAGE DE LA LISTE GENERAL //
 let checkGeneral = document.getElementById('checkGeneral') as HTMLInputElement;
 let afficherGeneral: boolean = localStorage.getItem('afficherGeneral') !== 'false';
-// Set it on the checkbox
 checkGeneral.checked = afficherGeneral;
-
+// Dès que la case est cochée ou décochée, on sauvegarde le choix dans le localStorage et on recharge les listes
 checkGeneral.addEventListener('change', () => {
-    // Save localStorage
+    // Sauvegarde choix d'affichage de General dans localstorage
     localStorage.setItem('afficherGeneral', checkGeneral.checked.toString());
     afficherGeneral = checkGeneral.checked;
-    // Empty and reload
     menuListes.innerHTML = '';
     loadLists();
 });
@@ -382,18 +415,14 @@ themeButtons.forEach(btn => {
 // UPDATE USERNAME //
 btnUpdateUsername.addEventListener('click', () => {
     const nouveau = inputNewUsername.value.trim();
-    
-    // Garde 1 : champ vide
-    // → afficherFeedback avec 'feedback_username_empty' + 'error' + return
     if (nouveau === '') {
         afficherFeedback(feedbackUsername, 'feedback_username_empty', 'error');
         return;
     }
-    
-    // Garde 2 : identique à l'actuel (compare avec infoUsername.textContent)
-    // → afficherFeedback avec 'feedback_username_same' + 'error' + return
-    
-    // Appel API
+    if (nouveau === infoUsername.textContent) {
+        afficherFeedback(feedbackUsername, 'feedback_username_same', 'error');
+        return;
+    }
     fetch('../api/update_username.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -407,16 +436,58 @@ btnUpdateUsername.addEventListener('click', () => {
         return reponse.json();
     })
     .then(data => {
+        const cle = typeof data?.code === 'string' ? 'feedback_' + data.code : (data?.message ?? '');
         if (data.success === true) {
-            // MAJ visuelle : infoUsername.textContent = data.username
-            // Vider inputNewUsername
-            // afficherFeedback succès avec 'feedback_username_success' + 'success'
+            infoUsername.textContent = data.username;
+            inputNewUsername.value = '';
+            afficherFeedback(feedbackUsername, cle, 'success');
         } else {
-            // Erreur backend : afficher data.message
-            // → afficherFeedback(feedbackUsername, data.message, 'error')
+            afficherFeedback(feedbackUsername, cle, 'error');
         }
     })
     .catch(err => console.error(err));
+});
+
+inputNewUsername.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') btnUpdateUsername.click();
+});
+
+// UPDATE PASSWORD //
+btnUpdatePassword.addEventListener('click', () => {
+    const ancien = inputOldPassword.value;
+    const nouveau = inputNewPassword.value;    
+    if (ancien === '' || nouveau === '') {
+        afficherFeedback(feedbackPassword, 'feedback_password_empty', 'error')
+        return
+    }    
+
+    fetch('../api/update_password.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldPassword: ancien, newPassword: nouveau })
+    })
+    .then(reponse => {
+        if (reponse.status === 401) {
+            window.location.href = 'login.html';
+            throw new Error("Non connecté");
+        }
+        return reponse.json();
+    })
+    .then(data => {
+        const cle = typeof data?.code === 'string' ? 'feedback_' + data.code : (data?.message ?? '');
+        if (data.success === true) {
+            inputOldPassword.value = '';
+            inputNewPassword.value = '';
+            afficherFeedback(feedbackPassword, cle, 'success');
+        } else {
+            afficherFeedback(feedbackPassword, cle, 'error');
+        }
+    })
+    .catch(err => console.error(err));
+});
+
+inputNewPassword.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') btnUpdatePassword.click();
 });
 
 // LOGOUT //
@@ -431,7 +502,7 @@ btn_logout.addEventListener('click', () => {
     .catch(err => console.error(err))
 });
 
-//INITIALIZATION//
+/////////////////////////////////////////// APPELS DE FONCTIONS ///////////////////////////////////////////
 loadLists();
 loadUserInfo();
 appliquerTraduction();

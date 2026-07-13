@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once 'config.php';
 
 if (!isset($_SESSION['user_id'])) {
-    $tab = (['success' => false, 'message' => 'Unauthorized']);
+    $tab = (['success' => false, 'code' => 'unauthorized', 'message' => 'Unauthorized']);
     header('Content-Type: application/json');
     echo json_encode($tab);
     exit;
@@ -17,7 +17,7 @@ $data = json_decode($txt_brut, true);
 if (isset($data['username']) && trim($data['username']) !== '' ){
     $username = trim($data['username']);
     if (mb_strlen($username) > 255) {
-        $tab = (['success' => false, 'message' => 'Username must be 255 characters or less']);
+        $tab = (['success' => false, 'code' => 'username_too_long', 'message' => 'Username must be 255 characters or less']);
         header('Content-Type: application/json');
         echo json_encode($tab);
         exit;
@@ -27,12 +27,12 @@ if (isset($data['username']) && trim($data['username']) !== '' ){
         $stmt->bindParam(':username', $username);
         $stmt->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
         $stmt->execute();
-        $tab = (['success' => true, 'message' => 'Username updated successfully', 'username' => $username]);
+        $tab = (['success' => true, 'code' => 'username_updated', 'message' => 'Username updated successfully', 'username' => $username]);
     } catch (PDOException $e) {
-        $tab = (['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+        $tab = (['success' => false, 'code' => 'database_error', 'message' => 'Database error: ' . $e->getMessage()]);
     }
 } else {
-    $tab = (['success' => false, 'message' => 'Username is required']);
+    $tab = (['success' => false, 'code' => 'username_required', 'message' => 'Username is required']);
 }
 
 header('Content-Type: application/json');

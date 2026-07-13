@@ -15,6 +15,7 @@
         <h1>Done.</h1>
         <p data-i18n="app_subtitle">Focus & Productivity</p><button id="btnAjouterListe">+</button>
         <ul id="menuListes"></ul>
+        <button id="btn_settings" data-i18n="btn_settings">Settings</button>
     </aside>
 
     <div class="conteneur-principal">
@@ -30,7 +31,7 @@
             <section class="section-parametre">
                 <h3 data-i18n="settings_account">Mon Compte</h3>
                 <div class="carte-parametre">
-                    <span data-i18n="settings_email">Email</span>
+                    <span data-i18n="settings_email">Email</span><br>
                     <strong id="infoEmail"></strong>
                 </div>
                 <div class="carte-parametre carte-formulaire">
@@ -69,17 +70,16 @@
                 <h3 data-i18n="settings_language">Langue</h3>
                 <div class="carte-parametre row">
                     <span data-i18n="settings_select_lang">Choisir la langue</span>
-                    <select id="selectLangue">
-                        <option value="fr">Français</option>
-                        <option value="en">English</option>
-                    </select>
+                    <div class="segmented-control" id="langueSwitch">
+                        <button type="button" data-langue-value="fr">FR</button>
+                        <button type="button" data-langue-value="en">EN</button>
+                    </div>
                 </div>
             </section>
+            
+            <button id="btn_logout" data-i18n="btn_logout">Logout</button>
         </div>
     </div>
-
-    <button id="btn_settings" data-i18n="btn_settings">Settings</button>
-    <button id="btn_logout" data-i18n="btn_logout">Logout</button>
 
     <script src="js/app.js" type="module" defer></script>
 

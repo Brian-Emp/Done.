@@ -14,15 +14,15 @@ if (isset($user['email']) && isset($user['password']) && $user['email'] !== '' &
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($result && password_verify($password, $result['password'])) {
             $_SESSION['user_id'] = $result['id'];
-            $tab = (['success' => true, 'message' => 'Login successful']);
+            $tab = (['success' => true, 'code' => 'login_success', 'message' => 'Login successful']);
         } else {
-            $tab = (['success' => false, 'message' => 'Invalid email or password']);
+            $tab = (['success' => false, 'code' => 'login_invalid_credentials', 'message' => 'Invalid email or password']);
         }
     } catch (PDOException $e) {
-        $tab = (['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        $tab = (['success' => false, 'code' => 'database_error', 'message' => 'Error: ' . $e->getMessage()]);
     }
 } else {
-    $tab = (['success' => false, 'message' => 'Email and password are required']);
+    $tab = (['success' => false, 'code' => 'login_missing_fields', 'message' => 'Email and password are required']);
 }
 header('Content-Type: application/json');
 echo json_encode($tab);

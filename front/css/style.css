@@ -281,36 +281,19 @@ ul     { list-style: none; }
    à gauche (au-dessus de tout) sans toucher au balisage.
    =================================================================== */
 #btn_logout {
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  width: 224px;            /* largeur sidebar (256) - marges */
-  padding: 10px 12px;
+  align-self: flex-end;        /* aligné à droite, pas full-width */
+  margin-top: auto;            /* poussé en bas des réglages */
+  padding: 8px 16px;
   border-radius: var(--rayon);
-  font-size: 0.88rem;
-  font-weight: 500;
-  text-align: left;
+  background: transparent;
+  border: none;
   color: var(--texte-doux);
-  transition: background var(--transition), color var(--transition);
-}
-#btn_logout:hover { background: var(--danger-doux); color: var(--danger); }
-
-/* Bouton thème clair / sombre : juste au-dessus de la déconnexion */
-#btn_theme {
-  position: fixed;
-  left: 16px;
-  bottom: 56px;            /* au-dessus du bouton Déconnexion (qui est à 16px) */
-  width: 224px;
-  padding: 10px 12px;
-  border-radius: var(--rayon);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  text-align: left;
-  color: var(--texte-doux);
-  transition: background var(--transition), color var(--transition);
+  cursor: pointer;
+  transition: color var(--transition);
 }
-#btn_theme:hover { background: var(--accent-doux); color: var(--accent); }
-
+#btn_logout:hover { color: var(--danger); }
 
 /* ===================================================================
    8. PAGES CONNEXION / INSCRIPTION
@@ -407,26 +390,6 @@ ul     { list-style: none; }
     padding: 18px 16px;
   }
   .conteneur-principal { padding: 18px 16px 0; }
-
-  /* La déconnexion repasse en bouton compact en haut à droite */
-  #btn_logout {
-    position: fixed;
-    top: 16px; right: 16px;
-    left: auto; bottom: auto;
-    width: auto;
-    padding: 8px 12px;
-    background: var(--surface);
-    border: 1px solid var(--bordure);
-  }
-  /* Le bouton thème passe juste en dessous de la déconnexion */
-  #btn_theme {
-    top: 56px; right: 16px;
-    left: auto; bottom: auto;
-    width: auto;
-    padding: 8px 12px;
-    background: var(--surface);
-    border: 1px solid var(--bordure);
-  }
 }
 
 /* Contour clavier visible */
@@ -487,7 +450,10 @@ ul     { list-style: none; }
   display: flex;
   flex-direction: column;
   gap: 24px;
-  animation: fadeIn 200ms ease; /* Petite animation fluide à l'ouverture */
+  flex: 1;              /* prend tout l'espace vertical dispo dans le conteneur-principal */
+  overflow-y: auto;     /* scroll quand ça déborde */
+  padding-right: 8px;   /* évite que la scrollbar colle au contenu */
+  animation: fadeIn 200ms ease;
 }
 
 .section-parametre {
@@ -626,30 +592,19 @@ ul     { list-style: none; }
 
 /* Repositionnement du bouton paramètre dans le coin mobile si besoin */
 #btn_settings {
-  position: fixed;
-  left: 16px;
-  bottom: 96px; /* Placé juste au-dessus du bouton thème (qui est à 56px) */
-  width: 224px;
+  margin-top: auto;   
   padding: 10px 12px;
   border-radius: var(--rayon);
   font-size: 0.88rem;
   font-weight: 500;
   text-align: left;
   color: var(--texte-doux);
+  background: transparent;
+  border: none;
+  cursor: pointer;
   transition: background var(--transition), color var(--transition);
 }
 #btn_settings:hover { background: var(--accent-doux); color: var(--accent); }
-
-@media (max-width: 720px) {
-  #btn_settings {
-    top: 96px; right: 16px;
-    left: auto; bottom: auto;
-    width: auto;
-    padding: 8px 12px;
-    background: var(--surface);
-    border: 1px solid var(--bordure);
-  }
-}
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
