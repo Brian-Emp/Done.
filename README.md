@@ -57,6 +57,11 @@ The same interface with the light theme applied (toggled from the bottom-left).
 
 ![App in light mode](front/assets/app-light.png)
 
+### Settings and user perferances
+The settings page with username and password secure instant update, themes and languages selection.
+
+![Settings page](front/assets/settings.png)
+
 ---
 
 ## Tech Stack
