@@ -1,6 +1,7 @@
 /////////////////////////////////////////// DEFINITION DES VARIABLES ///////////////////////////////////////////
 import { Tache } from "./Tache.js";
 import { langueActive, dictionnaire } from "./dico.js";
+import { notif } from "./notif.js";
 
 //Elements HTML ecran principal
 let btnAjouter = document.getElementById('btnAjouter') as HTMLButtonElement;
@@ -253,20 +254,6 @@ function loadUserInfo() {
     .catch(err => console.error("Erreur réseau :", err));
 }
 
-function notif(cleOuMessage: string, type: 'success' | 'error' | 'info' = 'info') {
-    const container = document.getElementById('notifs') as HTMLDivElement;
-    const el = document.createElement('div');
-    el.className = 'notif ' + type;
-    // Verrif de la trad dans dico, sinon affiche txt brut
-    el.textContent = dictionnaire[langueActive]?.[cleOuMessage] || cleOuMessage;
-    container.appendChild(el);
-    // Disparition notif apres 3s 
-    setTimeout(() => {
-        el.classList.add('sortie');
-        el.addEventListener('animationend', () => el.remove(), { once: true });
-    }, 3000);
-}
-
 /////////////////////////////////////////// EVENTS LISTENERS ///////////////////////////////////////////
 // INPUT TACHE (Entrer) //
 inputTache.addEventListener('keydown', (event) => {
@@ -320,6 +307,7 @@ btnDeleteListCtx.addEventListener('click', () => {
         if (data.success === true) {
             menuListes.innerHTML = '';
             loadLists();
+            notif('notif_list_deleted', 'success');
         }
     })
     .catch(err => console.error(err));
@@ -363,6 +351,7 @@ btnAjouterListe.addEventListener('click', () => {
                 if (data.success === true){
                     menuListes.innerHTML = '';
                     loadLists();
+                    notif('notif_list_added', 'success');
                 }
             })
             .catch(err => console.error(err))
@@ -398,6 +387,8 @@ langueButtons.forEach(btn => {
         const nouvelle = btn.dataset.langueValue;
         if (!nouvelle) return;
         localStorage.setItem('langue', nouvelle);
+        // Drapeau lu au chargement : la notif survit au reload
+        localStorage.setItem('notifLangue', '1');
         window.location.reload();
     });
 });
@@ -466,6 +457,7 @@ btnUpdateUsername.addEventListener('click', () => {
             infoUsername.textContent = data.username;
             inputNewUsername.value = '';
             afficherFeedback(feedbackUsername, cle, 'success');
+            notif('feedback_username_updated', 'success');
         } else {
             afficherFeedback(feedbackUsername, cle, 'error');
         }
@@ -532,3 +524,8 @@ loadLists();
 loadUserInfo();
 appliquerTraduction();
 appliquerTheme(localStorage.getItem('theme')|| (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+// Notif posée avant le reload du changement de langue
+if (localStorage.getItem('notifLangue')) {
+    localStorage.removeItem('notifLangue');
+    notif('notif_language_changed', 'success');
+}

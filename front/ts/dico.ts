@@ -50,6 +50,9 @@ export const dictionnaire: Record<string, Record<string, string>> = {
 
         notif_task_empty: "Task cannot be empty",
         notif_list_name_empty: "List name cannot be empty",
+        notif_list_added: "List created",
+        notif_list_deleted: "List deleted",
+        notif_language_changed: "Language changed",
     },
     fr: {
         app_subtitle: "Focus & Productivité",
@@ -102,6 +105,9 @@ export const dictionnaire: Record<string, Record<string, string>> = {
 
         notif_task_empty: "La tâche ne peut pas être vide",
         notif_list_name_empty: "Le nom de la liste ne peut pas être vide",
+        notif_list_added: "Liste créée",
+        notif_list_deleted: "Liste supprimée",
+        notif_language_changed: "Langue modifiée",
     }
 };
 

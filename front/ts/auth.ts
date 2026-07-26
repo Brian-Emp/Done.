@@ -1,4 +1,5 @@
 import { langueActive, dictionnaire } from "./dico.js";
+import { notif } from "./notif.js";
 
 let email = document.getElementById('email') as HTMLInputElement;
 let password = document.getElementById('password') as HTMLInputElement;
@@ -31,7 +32,7 @@ btn_login.addEventListener('click', (event) => {
                 window.location.href = 'index.html';
             } else {
                 /// Login failed, display an error message
-                alert(traduireCode(data?.code, data?.message ?? ''));
+                notif(traduireCode(data?.code, data?.message ?? ''), 'error');
             }
         })
         .catch(err => console.error(err));
