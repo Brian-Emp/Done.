@@ -40,7 +40,6 @@ let listeCibleNom: string = '';
 const themeSwitch = document.getElementById('themeSwitch') as HTMLDivElement;
 const themeButtons = themeSwitch.querySelectorAll<HTMLButtonElement>('[data-theme-value]');
 let userList = 0;
-
 /////////////////////////////////////////// INTERFACES ///////////////////////////////////////////
 interface TacheAPI {
     id: number;
@@ -139,7 +138,7 @@ function displayTask(tache: Tache){
                     tache.ChangeState();
                     if (tache.estTermine){
                         balise.style.textDecoration = 'line-through';
-                        balise.style.color = 'gray';
+                        balise.style.color = 'var(--texte-doux)';
                         balise.style.order = '1';
                     } else {
                         balise.style.textDecoration = 'none';
@@ -174,8 +173,8 @@ function loadTasks(){
     })
 }
 
-function loadLists() {
-    fetch('../api/get_lists.php')
+function loadLists(){
+    return fetch('../api/get_lists.php')
     .then(reponse => {
         if (reponse.status === 401) {
             window.location.href = 'login.html';
@@ -254,6 +253,20 @@ function loadUserInfo() {
     .catch(err => console.error("Erreur réseau :", err));
 }
 
+function notif(cleOuMessage: string, type: 'success' | 'error' | 'info' = 'info') {
+    const container = document.getElementById('notifs') as HTMLDivElement;
+    const el = document.createElement('div');
+    el.className = 'notif ' + type;
+    // Verrif de la trad dans dico, sinon affiche txt brut
+    el.textContent = dictionnaire[langueActive]?.[cleOuMessage] || cleOuMessage;
+    container.appendChild(el);
+    // Disparition notif apres 3s 
+    setTimeout(() => {
+        el.classList.add('sortie');
+        el.addEventListener('animationend', () => el.remove(), { once: true });
+    }, 3000);
+}
+
 /////////////////////////////////////////// EVENTS LISTENERS ///////////////////////////////////////////
 // INPUT TACHE (Entrer) //
 inputTache.addEventListener('keydown', (event) => {
@@ -286,7 +299,7 @@ btnRenameListCtx.addEventListener('click', () => {
         })
         .catch(err => console.error(err));
     } else {
-        alert("Le nom de la liste ne peut pas être vide.");
+        notif('notif_list_name_empty', 'error');
     }
 });
 
@@ -316,7 +329,7 @@ btnDeleteListCtx.addEventListener('click', () => {
 btnAjouter.addEventListener('click', () => {
     let texteSaisi = inputTache.value;
     if (texteSaisi == ''){
-        alert("Tache vide, veuillez la compléter.");
+        notif('notif_task_empty', 'error');
         return;
     }
     let donneesAEnvoyer = { title: texteSaisi};
@@ -354,7 +367,7 @@ btnAjouterListe.addEventListener('click', () => {
             })
             .catch(err => console.error(err))
     } else {
-        alert("Le nom de la liste ne peut pas être vide.");
+        notif('notif_list_name_empty', 'error');
     }
 });
 
@@ -395,11 +408,23 @@ let afficherGeneral: boolean = localStorage.getItem('afficherGeneral') !== 'fals
 checkGeneral.checked = afficherGeneral;
 // Dès que la case est cochée ou décochée, on sauvegarde le choix dans le localStorage et on recharge les listes
 checkGeneral.addEventListener('change', () => {
-    // Sauvegarde choix d'affichage de General dans localstorage
     localStorage.setItem('afficherGeneral', checkGeneral.checked.toString());
     afficherGeneral = checkGeneral.checked;
+    const dansParametres = zoneParametres.style.display === 'flex';
     menuListes.innerHTML = '';
-    loadLists();
+    loadLists().then(() => {
+        // bloc async
+        if (dansParametres) {
+            zoneParametres.style.display = 'flex';
+            zoneSaisie.style.display = 'none';
+            listeTaches.style.display = 'none';
+            titreListeActive.innerText = dictionnaire[langueActive]?.['settings_title'] || 'Settings';
+            document.querySelectorAll('#menuListes li').forEach(el => {
+                el.classList.remove('liste-active');
+                (el as HTMLLIElement).style.cursor = 'not-allowed';
+            });
+        }
+    });
 });
 
 // THEME SWITCH //
