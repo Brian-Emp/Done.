@@ -762,6 +762,21 @@ ul     { list-style: none; }
   }
 }
 
+.modale-boite input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--fond);
+  border: 1px solid var(--bordure);
+  color: var(--texte);
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+.modale-boite input:focus { border-color: var(--accent); }
+
+#modalePromptConfirmer { background: var(--accent); color: #fff; }
+#modalePromptConfirmer:hover { filter: brightness(1.08); }
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }

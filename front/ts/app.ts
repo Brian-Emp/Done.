@@ -2,7 +2,7 @@
 import { Tache } from "./Tache.js";
 import { langueActive, dictionnaire } from "./dico.js";
 import { notif } from "./notif.js";
-import { modaleConfirm } from "./modale.js";
+import { modaleConfirm, modalePrompt } from "./modale.js";
 
 //Elements HTML ecran principal
 let btnAjouter = document.getElementById('btnAjouter') as HTMLButtonElement;
@@ -269,10 +269,10 @@ document.addEventListener('click', () => {
 });
 
 // BOUTON RENOMMER LISTE (clique droit) //
-btnRenameListCtx.addEventListener('click', () => {
-    let nouveauNom = prompt("Entrez le nouveau nom de la liste :", listeCibleNom);
-    if (nouveauNom === null) return; // Si user annull, none
-    if (nouveauNom && nouveauNom.trim() !== '') {
+btnRenameListCtx.addEventListener('click', async () => {
+    const nouveauNom = await modalePrompt('modale_rename_list_title', listeCibleNom);
+    if (nouveauNom === null) return;
+    if (nouveauNom.trim() !== '') {
         let donneesAEnvoyer = { id: listeCibleId, name: nouveauNom.trim() };
         fetch('../api/update_list.php', {
             method: 'POST',
@@ -340,9 +340,10 @@ btnAjouter.addEventListener('click', () => {
 })
 
 // BOUTON AJOUTER LISTE (+) //
-btnAjouterListe.addEventListener('click', () => {
-    let nomListe = prompt("Entrez le nom de la nouvelle liste :");
-    if (nomListe && nomListe.trim() !== '') {
+btnAjouterListe.addEventListener('click', async () => {
+    const nomListe = await modalePrompt('modale_add_list_title');
+    if (nomListe === null) return;
+    if (nomListe.trim() !== '') {
         let donneesAEnvoyer = { name: nomListe.trim() };
         fetch('../api/add_list.php', {
             method: 'POST',
