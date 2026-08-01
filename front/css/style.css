@@ -674,6 +674,94 @@ ul     { list-style: none; }
   }
 }
 
+/* ===================================================================
+   MODALE DE CONFIRMATION
+   =================================================================== */
+.modale {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;              
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  animation: modaleFondIn 150ms ease-out;
+}
+
+.modale-boite {
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: modaleBoiteIn 180ms ease-out;
+}
+
+.modale-boite h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.modale-boite p {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--texte-doux);
+}
+
+.modale-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.modale-actions button {
+  padding: 9px 18px;
+  border-radius: var(--rayon);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition);
+}
+
+#modaleAnnuler {
+  background: transparent;
+  color: var(--texte-doux);
+  border: 1px solid var(--bordure);
+}
+#modaleAnnuler:hover { background: var(--accent-doux); color: var(--texte); }
+
+#modaleConfirmer {
+  background: var(--danger);
+  color: #fff;
+}
+#modaleConfirmer:hover { filter: brightness(1.08); }
+
+@keyframes modaleFondIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes modaleBoiteIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 720px) {
+  .modale { align-items: flex-end; padding: 16px; }
+  .modale-boite { max-width: none; animation: modaleBoiteInMobile 180ms ease-out; }
+  
+  @keyframes modaleBoiteInMobile {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }

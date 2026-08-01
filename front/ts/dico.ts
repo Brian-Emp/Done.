@@ -53,6 +53,11 @@ export const dictionnaire: Record<string, Record<string, string>> = {
         notif_list_added: "List created",
         notif_list_deleted: "List deleted",
         notif_language_changed: "Language changed",
+
+        btn_cancel: "Cancel",
+        btn_confirm: "Delete",
+        modale_delete_list_title: "Delete list",
+        modale_delete_list_msg: "Do you really want to delete the list \"{nom}\"? This action cannot be undone.",
     },
     fr: {
         app_subtitle: "Focus & Productivité",
@@ -108,6 +113,11 @@ export const dictionnaire: Record<string, Record<string, string>> = {
         notif_list_added: "Liste créée",
         notif_list_deleted: "Liste supprimée",
         notif_language_changed: "Langue modifiée",
+
+        btn_cancel: "Annuler",
+        btn_confirm: "Supprimer",
+        modale_delete_list_title: "Supprimer la liste",
+        modale_delete_list_msg: "Voulez-vous vraiment supprimer la liste « {nom} » ? Cette action est irréversible.",
     }
 };
 

@@ -2,6 +2,7 @@
 import { Tache } from "./Tache.js";
 import { langueActive, dictionnaire } from "./dico.js";
 import { notif } from "./notif.js";
+import { modaleConfirm } from "./modale.js";
 
 //Elements HTML ecran principal
 let btnAjouter = document.getElementById('btnAjouter') as HTMLButtonElement;
@@ -270,6 +271,7 @@ document.addEventListener('click', () => {
 // BOUTON RENOMMER LISTE (clique droit) //
 btnRenameListCtx.addEventListener('click', () => {
     let nouveauNom = prompt("Entrez le nouveau nom de la liste :", listeCibleNom);
+    if (nouveauNom === null) return; // Si user annull, none
     if (nouveauNom && nouveauNom.trim() !== '') {
         let donneesAEnvoyer = { id: listeCibleId, name: nouveauNom.trim() };
         fetch('../api/update_list.php', {
@@ -291,10 +293,10 @@ btnRenameListCtx.addEventListener('click', () => {
 });
 
 // BOUTON SUPPRIMER LISTE (clique droit) //
-btnDeleteListCtx.addEventListener('click', () => {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer la liste "${listeCibleNom}" ?`)) {
-        return;
-    }
+btnDeleteListCtx.addEventListener('click', async() => {
+    const confirme = await modaleConfirm('modale_delete_list_title', 'modale_delete_list_msg', { nom: listeCibleNom });
+
+    if (!confirme) return;
     
     let donneesAEnvoyer = { id: listeCibleId };
     fetch('../api/delete_list.php', {
